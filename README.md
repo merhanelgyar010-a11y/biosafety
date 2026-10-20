@@ -1,1 +1,595 @@
-# biosafety
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحدي الكلمات المتقاطعة للأمان المعملي: التنظيف والتطهير | محافظة البحر الأحمر</title>
+    <style>
+        :root {
+            --primary: #0284c7;
+            --primary-dark: #0369a1;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #cbd5e1;
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 15px;
+        }
+
+        header h1 {
+            font-size: 1.3rem;
+            color: var(--primary-dark);
+            margin-bottom: 5px;
+        }
+
+        header p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f1f5f9;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: bold;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-card {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .hint-box {
+            background: #e0f2fe;
+            border-right: 4px solid var(--primary);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+            color: #0369a1;
+            line-height: 1.5;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        .letter-boxes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin: 15px 0;
+            direction: ltr; /* لترتيب الحروف بشكل مريح للغة العربية في المربعات المتجاورة */
+        }
+
+        .letter-input {
+            width: 45px;
+            height: 50px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-align: center;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--text-main);
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .letter-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+        }
+
+        .letter-input.correct-box {
+            background-color: #dcfce7;
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .letter-input.wrong-box {
+            background-color: #fee2e2;
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .space-separator {
+            width: 15px;
+            align-self: center;
+        }
+
+        .feedback-msg {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1rem;
+            min-height: 24px;
+        }
+
+        .feedback-msg.success {
+            color: var(--success);
+        }
+
+        .feedback-msg.error {
+            color: var(--danger);
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e1;
+        }
+
+        .btn-danger {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: #fecaca;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .results-card {
+            text-align: center;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .results-card h2 {
+            color: var(--primary-dark);
+            font-size: 1.8rem;
+        }
+
+        .results-score {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--success);
+        }
+
+        @media (max-width: 480px) {
+            .letter-input {
+                width: 36px;
+                height: 42px;
+                font-size: 1.2rem;
+            }
+            .container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>تحدي الكلمات المتقاطعة للأمان المعملي</h1>
+            <p>المجموعة الثالثة: التنظيف والتطهير — مديرية الشؤون الصحية بالبحر الأحمر</p>
+        </header>
+
+        <!-- شاشة البداية -->
+        <div id="start-screen" class="screen active">
+            <div style="text-align: center; padding: 20px 0; display: flex; flex-direction: column; gap: 15px;">
+                <h2 style="color: var(--primary-dark);">اختبر معلوماتك في التنظيف والتطهير المعملي</h2>
+                <p style="color: var(--text-muted); line-height: 1.6;">
+                    تتكون هذه اللعبة من 50 سؤالاً تغطي المعايير الأساسية للتنظيف، التطهير، التعقيم، التعامل مع الانسكابات، وزمن التلامس وفق الإرشادات المعتمدة.
+                </p>
+                <button class="btn-primary" onclick="startGame()" style="padding: 12px 30px; font-size: 1.1rem; align-self: center;">ابدأ التحدي الآن</button>
+            </div>
+        </div>
+
+        <!-- شاشة اللعب -->
+        <div id="game-screen" class="screen">
+            <div class="game-info">
+                <span id="question-counter">السؤال 1 من 50</span>
+                <span id="score-display">النقاط: 0</span>
+            </div>
+
+            <div class="progress-bar-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+
+            <div class="question-card">
+                <div id="question-hint" class="hint-box">تلميح: ...</div>
+                <div id="question-title" class="question-title">السؤال هنا...</div>
+                
+                <div id="letter-boxes-container" class="letter-boxes">
+                    <!-- مربعات الحروف تولد ديناميكياً -->
+                </div>
+
+                <div id="feedback-message" class="feedback-msg"></div>
+
+                <div class="actions">
+                    <button class="btn-secondary" onclick="clearInputs()">مسح الحروف</button>
+                    <button class="btn-danger" onclick="showAnswer()">إظهار الإجابة</button>
+                    <button class="btn-primary" id="submit-btn" onclick="checkAnswer()">تحقق من الإجابة</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- شاشة النهاية -->
+        <div id="end-screen" class="screen">
+            <div class="results-card">
+                <h2>أهلاً بك في نهاية التحدي!</h2>
+                <p>لقد أتممت بنجاح أسئلة التنظيف والتطهير المعملي.</p>
+                <div id="final-score" class="results-score">0 / 50</div>
+                <p id="final-remark" style="font-weight: bold; color: var(--text-muted);"></p>
+                <button class="btn-primary" onclick="restartGame()" style="align-self: center; margin-top: 10px;">إعادة التحدي</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questionsData = [
+            { hint: "إزالة الأوساخ والمواد العضوية المرئية بالماء والمنظفات.", question: "ما المصطلح الذي يطلق على عملية إزالة الأوساخ والمواد العضوية المرئية؟", answer: "تنظيف" },
+            { hint: "عملية تقليل أعداد الكائنات الحية الدقيقة الممرضة على الأسطح غير الحية.", question: "ما المصطلح الذي يصف عملية القضاء على معظم الكائنات الممرضة عدا الأبواغ؟", answer: "تطهير" },
+            { hint: "المستوى الأعلى من المعالجة للقضاء على كافة الكائنات الحية بما فيها الأبواغ البكتيرية.", question: "ما المصطلح الذي يطلق على عملية تدمير جميع أشكال الحياة الدقيقة تماماً؟", answer: "تعقيم" },
+            { hint: "مواد كيميائية تستخدم لتطبيقها على الأسطح الصلبة غير الحية لقتل الميكروبات.", question: "ما اسم المادة الكيميائية المستخدمة لتطهير أسطح العمل المعملية؟", answer: "مطهر" },
+            { hint: "المادة الكيميائية المستخدمة لتطبيقها على الأنسجة الحية مثل الجلد لتقليل الميكروبات.", question: "ما المصطلح الذي يطلق على مطهر الجروح والجلد البشري؟", answer: "مطهر جلدي" },
+            { hint: "الخطوة الإلزامية التي تسبق أي عملية تطهير لضمان فعالية المواد الكيميائية.", question: "ما الخطوة الأساسية التي يجب إجراؤها قبل تطبيق المطهر على الأسطح؟", answer: "التنظيف" },
+            { hint: "الفترة الزمنية التي يجب أن يظل فيها السطح رطباً بالمطهر لضمان قتل الميكروبات.", question: "ما المصطلح الذي يعبر عن وقت بقاء المطهر نشطاً على السطح؟", answer: "زمن التلامس" },
+            { hint: "أداة أساسية لتنظيف الأسطح المعملية وتكون مخصصة لمرة واحدة أو قابلة للتعقيم.", question: "ما الأداة المستخدمة لمسح وتجفيف الأسطح المعملية؟", answer: "مناديل مبللة" },
+            { hint: "محلول كلوري شائع الاستخدام في المعامل بتراكيز مختلفة للتطهير.", question: "ما اسم المركب الشائع المستخدم في تحضير محاليل الكلور المطهرة؟", answer: "هيبوكلوريت الصوديوم" },
+            { hint: "التركيز القياسي الشائع لمحلول هيبوكلوريت الصوديوم في تطهير الانسكابات الدموية الكبيرة.", question: "ما نسبة التركيز المئوية التقريبية للكلور الفعال في التعامل مع الانسكابات الملوثة بالدم؟", answer: "عشرة بالمئة" },
+            { hint: "المعدات التي يجب ارتداؤها لحماية العينين والجهاز التنفسي أثناء تحضير المطهرات المركزة.", question: "ما معدات الوقاية الشخصية الضرورية عند تحضير المواد الكيميائية المطهرة؟", answer: "قفازات" },
+            { hint: "إجراء غير آمن تماماً يتمثل في دمج مواد كيميائية مختلفة قد ينتج عنه أبواغ سامة.", question: "ما الخطأ الشائع الذي يجب تجنبه تماماً عند استخدام المواد المطهرة؟", answer: "الخلط" },
+            { hint: "الوثيقة الموجودة على عبوة المطهر والتي توضح التركيز وتاريخ الصلاحية ومخاطر المادة.", question: "ما الوثيقة أو البيانات المكتوبة على العبوة لتحديد هوية ومواصفات المطهر؟", answer: "ملصق" },
+            { hint: "المكان أو الظروف المناسبة لحفظ المطهرات الكيميائية بعيداً عن أشعة الشمس المباشرة.", question: "ما طبيعة المكان الموصى به لتخزين المواد الكيميائية المطهرة؟", answer: "مكان بارد" },
+            { hint: "التعامل الفوري مع أي سائل بيولوجي متسرب على الأرضيات أو الطاولات المعملية.", question: "ما الإجراء المباشر الذي يتم اتباعه عند سقوط عينة بيولوجية مكسورة؟", answer: "احتواء الانسكاب" },
+            { hint: "المادة الفعالة الممتصة المستخدمة لتغطية الانسكابات السائلة قبل تطهيرها.", question: "ما المادة التي توضع فوق الانسكاب السائل لامتصاصه بأمان؟", answer: "مادة ماصة" },
+            { hint: "الفحص الدوري أو تقييم المخاطر لاختيار نوع المطهر المناسب لنوع الميكروب المستهدف.", question: "ما العملية التي تحدد اختيار المطهر بناءً على طبيعة العوامل البيولوجية؟", answer: "تقييم المخاطر" },
+            { hint: "تسجيل كافة عمليات التنظيف والتطهير اليومية والأسبوعية في المستندات المخصصة.", question: "ما الممارسة المطلوبة لتوثيق ومتابعة جودة أعمال التطهير المعملي؟", answer: "السجلات" },
+            { hint: "المسؤول الأول عن نظافة وتطهير طاولة العمل الخاصة به بعد انتهاء الفحص المعملي.", question: "من هو الشخص المسؤول عن تطهير مساحة عمله وفحص الأجهزة بعد الاستخدام؟", answer: "الفني المختص" },
+            { hint: "الجهاز المعملي المستخدم لتعقيم الأدوات الزجاجية والمعدنية بالحرارة الرطبة وتحت ضغط.", question: "ما اسم جهاز التعقيم البخاري الأساسي في المعامل الطبية؟", answer: "أوتوكلاف" },
+            { hint: "طريقة تعقيم بالحرارة الجافة تستخدم للأدوات المعدنية الحادة التي تتأثر بالرطوبة.", question: "ما اسم الجهاز المستخدم للتعقيم بالهواء الساخن الجاف؟", answer: "فرن التعقيم" },
+            { hint: "فحص دوري مؤكد لفاعلية أجهزة التعقيم الحراري باستخدام كبسولات بيولوجية تحتوي على أبواغ.", question: "ما نوع الاختبار الحيوي المستخدم للتأكد من كفاءة الأوتوكلاف؟", answer: "اختبار بيولوجي" },
+            { hint: "نوع المخلفات المعملية الناتجة عن عمليات التنظيف الملوثة بالسوائل البيولوجية.", question: "إلى أي تصنيف تذهب مخلفات التنظيف الملوثة بالدم والعينات؟", answer: "مخلفات خطرة" },
+            { hint: "الحاوية المخصصة للتخلص الآمن من مناديل وأدوات التنظيف أحادية الاستخدام الملوثة.", question: "ما لون أو نوع الكيس المخصص للتخلص من المخلفات المعدية الخطرة؟", answer: "كيس أحمر" },
+            { hint: "عملية التخلص النهائي من النفايات الحادة الناتجة عن أعمال التنظيف كالإبر والزجاج المكسور.", question: "ما اسم الصندوق الصلب المخصص للتخلص من الأدوات الحادة؟", answer: "صندوق الحادة" },
+            { hint: "حالة توافق بعض المطهرات مع الأسطح المراد تطهيرها دون إحداث تلف أو تآكل.", question: "ما المصطلح الذي يصف عدم تفاعل المطهر سلبًا مع خامة الجهاز أو السطح؟", answer: "توافق كيميائي" },
+            { hint: "الفترة المحددة لصلاحية المطهر بعد عملية فتح العبوة أو التخفيف بالماء.", question: "ما المصطلح الذي يحدد مدى فاعلية المطهر بعد تحضيره للاستخدام المباشر؟", answer: "صلاحية الاستخدام" },
+            { hint: "إرشادات السلامة الرسمية المرافقة لكل مادة كيميائية وتوضح كيفية التعامل معها وطوارئها.", question: "ما الاختصار العالمي لصحيفة بيانات سلامة المواد الكيميائية؟", answer: "MSDS" },
+            { hint: "المنطقة المخصصة لغسل الأيدي وأدوات الزجاج الصغيرة داخل المعمل الطبي.", question: "ما اسم الحوض المخصص للغسيل المعملي وتطهير الأيدي؟", answer: "حوض الغسيل" },
+            { hint: "مطهر كيميائي يعتمد على الكحول بنسبة سبعين بالمئة لتطهير الأيدي والأسطح الصغيرة.", question: "ما نوع الكحول الأكثر شيوعاً واستخداماً كمطهر سريع في المعامل؟", answer: "إيثانول" },
+            { hint: "كحول بديل يستخدم أحياناً بتركيز سبعين بالمئة كمطهر للأسطح والأيدي.", question: "ما اسم الكحول البديل للإيثانول والمستخدم في التعقيم؟", answer: "ايزوبروبانول" },
+            { hint: "الزمن اللازم لتأثير المطهر والذي يجب الالتزام به حرفياً حسب توصيات الشركة.", question: "ما المصطلح الذي يعني الالتزام الكامل بوقت التلامس الموصى به؟", answer: "زمن التعرض" },
+            { hint: "العملية التي تضمن خلو الأسطح تماماً من أي بقايا منظفات كيميائية ضارة بالعينات.", question: "ما الخطوة التالية لتنظيف الأسطح وقبل وضع المطهر الفعال؟", answer: "شطف بالماء" },
+            { hint: "معدات الوقاية الشخصية المستخدمة لحماية الجسم والجزء السفلي أثناء غسيل الأدوات الثقيلة.", question: "ما الرداء الواقي الإضافي الذي يلبسه العامل أثناء التنظيف والغسيل الثقيل؟", answer: "مريلة بلاستيكية" },
+            { hint: "الأداة المخصصة لحماية اليدين من المواد الكيميائية القوية والمطهرات المركزة أثناء الغسيل.", question: "ما نوع القفازات السميكة المقاومة للمواد الكيميائية المستخدمة في التنظيف الثقيل؟", answer: "قفازات مطاطية" },
+            { hint: "الاستجابة الفورية عند رذاذ مطهر مركز أو كيميائي بالعين داخل المعمل.", question: "ما الجهاز المخصص لغسيل العينين فور التعرض لأي رذاذ كيميائي؟", answer: "غسالة العيون" },
+            { hint: "حالة تلوث السطح المعملي بميكروبات جديدة نتيجة استخدام أدوات تنظيف متسخة أو غير معقمة.", question: "ما المصطلح الذي يصف انتقال التلوث عبر أدوات التنظيف نفسها؟", answer: "تلوث تبادلي" },
+            { hint: "الممارسة الصحيحة المتعلقة بتجفيف أدوات التنظيف المصنوعة من القماش أو الإسفنج بعد الاستخدام.", question: "ما الإجراء الصحيح لمنع نمو البكتيريا على أدوات التنظيف بعد استخدامها؟", answer: "التجفيف الجيد" },
+            { hint: "الجدول الزمني المعتمد داخل المعمل لتنظيف الأرضيات والجدران والأسطح بانتظام.", question: "ما المصطلح الذي يطلق على الجدول المخطط لأعمال التنظيف الدورية؟", answer: "جدول دوري" },
+            { hint: "العملية التصحيحية الفورية عند اكتشاف عيب أو قصور في جودة تطهير الأجهزة المعملية.", question: "ما الإجراء الذي يتم اتخاذه عند رصد انحراف في معايير النظافة والتطهير؟", answer: "إجراء تصحيحي" },
+            { hint: "نوع مطهر يعتمد على مركبات الأمونيوم الرباعية لتطهير الأسطح غير الحرجة.", question: "ما الاختصار الشائع لمركب الأمونيوم الرباعي المستخدم كمطهر؟", answer: "QACs" },
+            { hint: "مركب كيميائي مؤكسد قوي يستخدم كمطهر ومضاد للبكتيريا والأبواغ.", question: "ما اسم المادة المؤكسدة الشهيرة المستخدمة في التعقيم والتطهير الطبي؟", answer: "بيروكسيد الهيدروجين" },
+            { hint: "عملية التخلص الآمن من محاليل المطهرات منتهية الصلاحية دون الإضرار بالبيئة.", question: "ما الإجراء البيئي الآمن لتفريغ المطهرات الكيميائية القديمة في شبكة الصرف؟", answer: "تخفيف آمن" },
+            { hint: "المراجعة المستمرة والإشراف الإداري للتأكد من التزام العاملين بسياسات النظافة.", question: "ما الدور الإداري المسؤول عن متابعة وتدقيق معايير النظافة بالمعمل؟", answer: "مفتش الجودة" },
+            { hint: "الفحص البصري النهائي للسطح المعملي للتأكد من خلوه من أي بقايا دم أو أتربة قبل العمل.", question: "ما الخطوة البصرية التي تسبق بدء الفحص المعملي الجديد؟", answer: "فحص بصري" },
+            { hint: "التسجيل الفوري لاسم الشخص والوقت ورقم الوجبة عند تعقيم الأدوات في الأوتوكلاف.", question: "ما المصطلح الذي يطلق على السجل المخصص لتوثيق دورات التعقيم البخاري؟", answer: "سجل الأوتوكلاف" },
+            { hint: "نوع المنظفات المعملية المصممة خصيصاً لإزالة الرواسب البروتينية والدهنية العالقة.", question: "ما اسم المنظفات الخاصة التي تحتوي على إنزيمات محللة للبكتيريا والبروتين؟", answer: "منظفات إنزيمية" },
+            { hint: "مفهوم شامل يعني الحفاظ على نظافة المعمل وخلوه تماماً من العوامل المعدية طوال اليوم.", question: "ما المصطلح الذي يعبر عن بيئة العمل الخالية تماماً من التلوث الميكروبي؟", answer: "بيئة معقمة" },
+            { hint: "البرنامج الشامل المعتمد في المنشأة الصحية للسيطرة على انتشار العدوى وتطهير المعامل.", question: "ما اسم اللجنة أو البرنامج المسؤول عن مكافحة العدوى بالمنشأة؟", answer: "مكافحة العدوى" },
+            { hint: "الهدف النهائي المرجو من تطبيق كافة معايير التنظيف والتطهير الصارمة في المعامل الطبية.", question: "ما الغاية القصوى من الالتزام بإجراءات النظافة والأمان في المعمل؟", answer: "سلامة المرضى" }
+        ];
+
+        let currentIndex = 0;
+        let score = 0;
+        let currentBoxes = [];
+
+        function startGame() {
+            // خلط الأسئلة عشوائياً عند كل بداية جولة جديدة
+            shuffleArray(questionsData);
+            currentIndex = 0;
+            score = 0;
+            document.getElementById('start-screen').classList.remove('active');
+            document.getElementById('end-screen').classList.remove('active');
+            document.getElementById('game-screen').classList.add('active');
+            loadQuestion();
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function loadQuestion() {
+            const q = questionsData[currentIndex];
+            document.getElementById('question-counter').innerText = `السؤال ${currentIndex + 1} من ${questionsData.length}`;
+            document.getElementById('score-display').innerText = `النقاط: ${score}`;
+            document.getElementById('question-hint').innerText = `تلميح: ${q.hint}`;
+            document.getElementById('question-title').innerText = q.question;
+            
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = `${((currentIndex) / questionsData.length) * 100}%`;
+
+            document.getElementById('feedback-message').innerText = '';
+            document.getElementById('feedback-message').className = 'feedback-msg';
+
+            setupLetterBoxes(q.answer);
+        }
+
+        function setupLetterBoxes(answer) {
+            const container = document.getElementById('letter-boxes-container');
+            container.innerHTML = '';
+            currentBoxes = [];
+
+            // إزالة المسافات الزائدة وتقسيم الإجابة إلى حروف أو كلمات
+            const words = answer.trim().split(' ');
+
+            words.forEach((word, wordIndex) => {
+                if (wordIndex > 0) {
+                    const separator = document.createElement('div');
+                    separator.className = 'space-separator';
+                    container.appendChild(separator);
+                }
+
+                for (let i = 0; i < word.length; i++) {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.maxLength = 1;
+                    input.className = 'letter-input';
+                    
+                    // التنقل التلقائي بين المربعات
+                    input.addEventListener('input', (e) => {
+                        const val = e.target.value;
+                        // تطبيع الحروف العربية البسيطة عند الكتابة إذا رغب اللاعب، أو تركها عادية
+                        e.target.value = normalizeArabicChar(val);
+                        if (val && e.target.nextElementSibling && !e.target.nextElementSibling.classList.contains('space-separator')) {
+                            e.target.nextElementSibling.focus();
+                        }
+                    });
+
+                    input.addEventListener('keydown', (e) => {
+                        if (e.key === 'Backspace' && !e.target.value && e.target.previousElementSibling && !e.target.previousElementSibling.classList.contains('space-separator')) {
+                            e.target.previousElementSibling.focus();
+                        }
+                    });
+
+                    container.appendChild(input);
+                    currentBoxes.push(input);
+                }
+            });
+
+            // التركيز على أول مربع
+            if (currentBoxes.length > 0) {
+                currentBoxes[0].focus();
+            }
+        }
+
+        function normalizeArabicChar(char) {
+            if (!char) return '';
+            // توحيد الألفات والتاء المربوطة والهاء لتسهيل التحقق
+            let c = char.trim();
+            if (c === 'أ' || c === 'إ' || c === 'آ') return 'ا';
+            if (c === 'ة') return 'ه';
+            return c;
+        }
+
+        function normalizeString(str) {
+            return str
+                .trim()
+                .replace(/[أإآ]/g, 'ا')
+                .replace(/ة/g, 'ه')
+                .replace(/ى/g, 'ي')
+                .replace(/\s+/g, '');
+        }
+
+        function clearInputs() {
+            currentBoxes.forEach(input => {
+                input.value = '';
+                input.classList.remove('correct-box', 'wrong-box');
+            });
+            if (currentBoxes.length > 0) {
+                currentBoxes[0].focus();
+            }
+            document.getElementById('feedback-message').innerText = '';
+        }
+
+        function showAnswer() {
+            const q = questionsData[currentIndex];
+            const cleanAns = q.answer.replace(/\s+/g, '');
+            let boxIdx = 0;
+            
+            for (let i = 0; i < q.answer.length; i++) {
+                if (q.answer[i] === ' ') continue;
+                if (currentBoxes[boxIdx]) {
+                    currentBoxes[boxIdx].value = q.answer[i];
+                    currentBoxes[boxIdx].classList.add('wrong-box');
+                }
+                boxIdx++;
+            }
+            
+            const msg = document.getElementById('feedback-message');
+            msg.innerText = `الإجابة الصحيحة هي: ${q.answer}`;
+            msg.className = 'feedback-msg error';
+
+            setTimeout(() => {
+                nextQuestionAutomatically();
+            }, 3000);
+        }
+
+        function checkAnswer() {
+            let userAnswer = '';
+            currentBoxes.forEach(input => {
+                userAnswer += input.value;
+            });
+
+            const correctAnswer = questionsData[currentIndex].answer;
+            
+            const normalizedUser = normalizeString(userAnswer);
+            const normalizedCorrect = normalizeString(correctAnswer);
+
+            const msg = document.getElementById('feedback-message');
+
+            if (normalizedUser.length < normalizedCorrect.length) {
+                msg.innerText = 'يرجى إكمال جميع حروف الكلمة أولاً!';
+                msg.className = 'feedback-msg error';
+                return;
+            }
+
+            if (normalizedUser === normalizedCorrect) {
+                msg.innerText = 'إجابة صحيحة! أحسنت.';
+                msg.className = 'feedback-msg success';
+                score++;
+                document.getElementById('score-display').innerText = `النقاط: ${score}`;
+                
+                currentBoxes.forEach(input => {
+                    input.classList.add('correct-box');
+                });
+
+                setTimeout(() => {
+                    nextQuestionAutomatically();
+                }, 1500);
+            } else {
+                msg.innerText = 'إجابة خاطئة، حاول مرة أخرى أو اضغط مسح الحروف.';
+                msg.className = 'feedback-msg error';
+                currentBoxes.forEach(input => {
+                    input.classList.add('wrong-box');
+                });
+                setTimeout(() => {
+                    currentBoxes.forEach(input => input.classList.remove('wrong-box'));
+                }, 1000);
+            }
+        }
+
+        function nextQuestionAutomatically() {
+            currentIndex++;
+            if (currentIndex < questionsData.length) {
+                loadQuestion();
+            } else {
+                showEndScreen();
+            }
+        }
+
+        function showEndScreen() {
+            document.getElementById('game-screen').classList.remove('active');
+            document.getElementById('end-screen').classList.add('active');
+            
+            document.getElementById('final-score').innerText = `${score} / ${questionsData.length}`;
+            
+            let remark = '';
+            const percentage = (score / questionsData.length) * 100;
+            if (percentage >= 90) {
+                remark = 'متاز! أداء استثنائي ينم عن خبرة عالية في معايير التنظيف والتطهير المعملي.';
+            } else if (percentage >= 75) {
+                remark = 'جيد جداً! لديك إلمام قوي بقواعد التعقيم ومكافحة العدوى.';
+            } else if (percentage >= 50) {
+                remark = 'مقبول، ينصح بمراجعة أدلة إجراءات التنظيف والتطهير القياسية بدقة.';
+            } else {
+                remark = 'تحتاج إلى إعادة مراجعة اشتراطات الأمان البيولوجي والتطهير المعملي.';
+            }
+            document.getElementById('final-remark').innerText = remark;
+        }
+
+        function restartGame() {
+            startGame();
+        }
+    </script>
+</body>
+</html>
